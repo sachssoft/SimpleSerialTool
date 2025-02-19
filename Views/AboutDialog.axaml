@@ -1,0 +1,98 @@
+<!-- MIT License - Copyright (c) 2025 Tobias Sachs -->
+<!-- See LICENSE file for details. -->
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		xmlns:local="using:sachssoft.SimpleSerialTool"
+		SizeToContent="Height"
+		MinHeight="200" Width="600"
+        x:Class="sachssoft.SimpleSerialTool.AboutDialog"
+		WindowState="Normal"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaChromeHints="SystemChrome"
+		ExtendClientAreaToDecorationsHint="True"
+		CanResize="False"
+        Title="About"
+		x:DataType="local:AboutDialogViewModel">
+	<Window.Styles>
+		<Style Selector="Button.Hyperlink">
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<ContentPresenter Content="{TemplateBinding Content}" />
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="Button.Hyperlink:pointerover TextBlock">
+			<Setter Property="Foreground" Value="Blue" />
+		</Style>
+	</Window.Styles>
+	<Grid RowDefinitions="*,20,Auto"
+		  ColumnDefinitions="Auto,20,*"
+		  Margin="20">
+		<Border Grid.Column="0"
+				Grid.Row="0"
+				VerticalAlignment="Top"
+				HorizontalAlignment="Center"
+				Width="80"
+				Height="80"
+				Background="#202020">
+			<Image x:Name="IconView" />
+		</Border>
+		<StackPanel Grid.Row="0"
+					Grid.Column="2"
+					Spacing="10">
+			<StackPanel Spacing="2">
+				<TextBlock FontSize="16"
+						   FontWeight="Bold"
+						   Text="{Binding ProductTitle}"/>
+				<TextBlock FontSize="14"
+						   Text="{Binding ProductVersion}"/>
+				<TextBlock FontSize="12"
+						   Text="{Binding Copyright}"/>
+			</StackPanel>
+			<TextBlock FontSize="12"
+					   TextWrapping="Wrap"
+					   Text="{Binding Description}"/>
+			<WrapPanel>
+				<TextBlock FontSize="12"
+						   FontWeight="Bold"
+						   TextWrapping="Wrap"
+						   Text="{Binding ProjectInfo}"/>
+				<Button Classes="Hyperlink"
+						Command="{Binding LicenseUrlCommand}">
+					<TextBlock FontSize="12"
+							   FontWeight="Bold"
+							   Foreground="LightBlue"
+							   TextDecorations="Underline"
+							   Text="{Binding LicenseUrl}"/>
+				</Button>
+			</WrapPanel>
+			<WrapPanel>
+				<TextBlock FontSize="12"
+						   TextWrapping="Wrap"
+						   Text="{Binding HintAboutPage}"/>
+				<Button Classes="Hyperlink"
+						Command="{Binding PageVisitUrlCommand}">
+					<TextBlock FontSize="12"
+							   Foreground="LightBlue"
+							   TextDecorations="Underline"
+							   Text="{Binding PageVisitUrl}"/>
+				</Button>
+			</WrapPanel>
+		</StackPanel>
+		<StackPanel Grid.Row="2"
+					Grid.Column="0"
+					Grid.ColumnSpan="3"
+					Spacing="10"
+					HorizontalAlignment="Center">
+			<Button Content="Close"
+					x:Name="CloseButton"
+					IsDefault="True"
+					HorizontalContentAlignment="Center"
+					Width="100" />
+		</StackPanel>
+	</Grid>
+</Window>

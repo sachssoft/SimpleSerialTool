@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<RootNamespace>sachssoft.SimpleSerialTool</RootNamespace>
+		<Nullable>enable</Nullable>
+		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+		<PublishAot>true</PublishAot>
+		<NoWin32Manifest>true</NoWin32Manifest>
+		<Authors>Tobias Sachs</Authors>
+		<FileVersion>1.0.0</FileVersion>
+		<Copyright>© 2025 by Tobias Sachs</Copyright>
+		<Product>Simple Serial Tool</Product>
+		<Description>Your Simple Serial Tool is an application for communicating with serial ports, allowing users to send and receive data via COM ports. It can be used for debugging, testing, and controlling serial devices.</Description>
+		<PackageTags>Serial Communication COM Port Serialport Testing Tool Controller Microcontroller Harddrive Simple</PackageTags>
+		<RepositoryUrl>https://github.com/sachssoft/SimpleSerialTool</RepositoryUrl>
+		<Copyright>© 2025 Tobias Sachs. Alle Rechte vorbehalten.</Copyright>
+		<PackageLicenseUrl>https://www.sachssoft.com/simpleserialtool/license</PackageLicenseUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="11.2.3" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
+		<PackageReference Include="Avalonia.ReactiveUI" Version="11.2.3" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.3" />
+		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.3" />
+		<PackageReference Include="AvaloniaHex" Version="0.1.6" />
+		<PackageReference Include="System.IO.Ports" Version="9.0.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Resource.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resource.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Resource.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+</Project>

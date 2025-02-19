@@ -1,0 +1,437 @@
+<!-- MIT License - Copyright (c) 2025 Tobias Sachs -->
+<!-- See LICENSE file for details. -->
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		xmlns:local="using:sachssoft.SimpleSerialTool"
+		xmlns:converters="using:sachssoft.SimpleSerialTool.Converters"
+		xmlns:hex="using:AvaloniaHex"
+		xmlns:hexr="using:AvaloniaHex.Rendering"
+        x:Class="sachssoft.SimpleSerialTool.MainWindow"
+		x:DataType="local:MainWindowViewModel"
+		MinWidth="720"
+		MinHeight="480"
+        Title="{Binding Title, Mode=OneTime}">
+	<Window.DataContext>
+		<local:MainWindowViewModel />
+	</Window.DataContext>
+	<Window.Resources>
+		<converters:EnumToBoolConverter x:Key="EnumToBoolConverter" />
+	</Window.Resources>
+	<Window.Styles>
+		<Style Selector="Button">
+			<Setter Property="Width" Value="100" />
+			<Setter Property="Height" Value="30" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<Style Selector="ComboBox">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="MaxDropDownHeight" Value="150" />
+			<Setter Property="Height" Value="30" />
+		</Style>
+		<Style Selector="TextBox">
+			<Setter Property="Height" Value="30" />
+		</Style>
+		<Style Selector="NumericUpDown">
+			<Setter Property="Height" Value="30" />
+		</Style>
+		<Style Selector="NumericUpDown /template/ TextBox">
+			<Setter Property="Height" Value="NaN" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="Margin" Value="0" />
+		</Style>
+		<Style Selector="MenuItem">
+			<Setter Property="Icon">
+				<Template>
+					<PathIcon Data="" />
+				</Template>
+			</Setter>
+		</Style>
+		<Style Selector="MenuItem:checked">
+			<Setter Property="Icon">
+				<Template>
+					<Viewbox Margin="2">
+						<PathIcon Data="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+					</Viewbox>
+				</Template>
+			</Setter>
+		</Style>
+		<Style Selector="TextBox#PlainText">
+			<Setter Property="BorderBrush" Value="#606060" />
+			<Setter Property="Background" Value="#202020" />
+			<Setter Property="Foreground" Value="#d0d0d0" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="Height" Value="NaN" />
+		</Style>
+		<Style Selector="TextBox#PlainText:pointerover">
+			<Setter Property="BorderBrush" Value="#808080" />
+		</Style>
+		<Style Selector="hex|HexEditor#SerialHexView">
+			<Setter Property="BorderBrush" Value="#606060" />
+			<Setter Property="Background" Value="#202020" />
+			<Setter Property="Foreground" Value="#f0f0f0" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="FontSize" Value="14" />
+		</Style>
+		<Style Selector="hex|HexEditor#SerialHexView:pointerover">
+			<Setter Property="BorderBrush" Value="#808080" />
+		</Style>
+	</Window.Styles>
+	<DockPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="File">
+				<MenuItem Header="Connect"
+						  Command="{Binding ConnectCommand}"
+						  IsVisible="{Binding !IsConnected}"
+						  InputGesture="F2"/>
+				<MenuItem Header="Disconnect"
+						  Command="{Binding DisconnectCommand}"
+						  IsVisible="{Binding IsConnected}"
+						  InputGesture="F3"/>
+				<MenuItem Header="Update"
+						  Command="{Binding UpdateCommand}"
+						  IsVisible="{Binding !IsConnected}"
+						  InputGesture="F5"/>
+				<Separator />
+				<MenuItem Header="New Window"
+						  Command="{Binding NewWindowCommand}"
+						  InputGesture="F12"/>
+				<Separator />
+				<MenuItem Header="Exit"
+						  Command="{Binding ExitCommand}"/>
+			</MenuItem>
+			<MenuItem Header="Edit">
+				<MenuItem Header="Copy Console"
+						  Command="{Binding CopyConsoleCommand}"
+						  InputGesture="ALT+CTRL+C"/>
+				<MenuItem Header="Copy Selection"
+						  Command="{Binding CopySelectionCommand}"
+						  InputGesture="CTRL+C"/>
+				<MenuItem Header="Clear"
+						  Command="{Binding ClearCommand}"
+						  InputGesture="CTRL+Delete"/>
+			</MenuItem>
+			<MenuItem Header="Settings">
+				<MenuItem Header="Buffer Encoding">
+					<MenuItem Header="Char"
+							  Command="{Binding EncodingModeCommand}"
+							  CommandParameter="{x:Static local:EncodingMode.Char}"
+							  IsChecked="{Binding EncodingMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:EncodingMode.Char}}"/>
+					<MenuItem Header="Bin"
+							  Command="{Binding EncodingModeCommand}"
+							  CommandParameter="{x:Static local:EncodingMode.Bin}"
+							  IsChecked="{Binding EncodingMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:EncodingMode.Bin}}"/>
+					<MenuItem Header="Hex"
+							  Command="{Binding EncodingModeCommand}"
+							  CommandParameter="{x:Static local:EncodingMode.Hex}"
+							  IsChecked="{Binding EncodingMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:EncodingMode.Hex}}"/>
+				</MenuItem>
+				<MenuItem Header="Output Linebreak">
+					<MenuItem Header="None"
+							  Command="{Binding LinebreakKindSwitchCommand}"
+							  CommandParameter="{x:Static local:LinebreakKinds.None}"
+							  IsChecked="{Binding LinebreakKind, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:LinebreakKinds.None}}"/>
+					<MenuItem Header="System"
+							  Command="{Binding LinebreakKindSwitchCommand}"
+							  CommandParameter="{x:Static local:LinebreakKinds.System}"
+							  IsChecked="{Binding LinebreakKind, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:LinebreakKinds.System}}"/>
+					<Separator />
+					<MenuItem Header="CR (0x0D)"
+							  Command="{Binding LinebreakKindSwitchCommand}"
+							  CommandParameter="{x:Static local:LinebreakKinds.CR}"
+							  IsChecked="{Binding LinebreakKind, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:LinebreakKinds.CR}}"/>
+					<MenuItem Header="LF (0x0A)"
+							  Command="{Binding LinebreakKindSwitchCommand}"
+							  CommandParameter="{x:Static local:LinebreakKinds.LF}"
+							  IsChecked="{Binding LinebreakKind, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:LinebreakKinds.LF}}"/>
+					<MenuItem Header="CRLF (0x0D0A)"
+							  Command="{Binding LinebreakKindSwitchCommand}"
+							  CommandParameter="{x:Static local:LinebreakKinds.CR_LF}"
+							  IsChecked="{Binding LinebreakKind, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:LinebreakKinds.CR_LF}}"/>
+					<MenuItem Header="LFCR (0x0A0D)"
+							  Command="{Binding LinebreakKindSwitchCommand}"
+							  CommandParameter="{x:Static local:LinebreakKinds.LF_CR}"
+							  IsChecked="{Binding LinebreakKind, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:LinebreakKinds.LF_CR}}"/>
+				</MenuItem>
+				<MenuItem Header="Hex View Columns">
+					<MenuItem Header="Offset"
+							  Command="{Binding OffsetInHexViewCommand}"
+							  IsChecked="{Binding HasOffsetInHexView}"/>
+					<MenuItem Header="Binary"
+							  Command="{Binding BinaryInHexViewCommand}"
+							  IsChecked="{Binding HasBinaryInHexView}"/>
+					<MenuItem Header="Plain Text"
+							  Command="{Binding PlainTextInHexViewCommand}"
+							  IsChecked="{Binding HasPlainTextInHexView}"/>
+				</MenuItem>
+				<!--<MenuItem Header="Wrap Console Text"
+						  Command="{Binding WrapConsoleTextCommand}"
+						  IsChecked="{Binding IsConsoleTextWrapped}"/>-->
+				<Separator />
+				<MenuItem Header="Data Flow Control">
+					<MenuItem Header="RTS"
+							  Command="{Binding RTSCommand}"
+							  IsChecked="{Binding IsRTSEnabled}"/>
+					<MenuItem Header="DTR"
+							  Command="{Binding DTRCommand}"
+							  IsChecked="{Binding IsDTREnabled}"/>
+				</MenuItem>
+				<Separator />
+				<MenuItem Header="Hex View"
+						  Command="{Binding ViewCommand}"
+						  CommandParameter="{x:Static local:Views.Hexdecimal}"
+						  IsChecked="{Binding View, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:Views.Hexdecimal}}"/>
+				<MenuItem Header="Plain Text View"
+						  Command="{Binding ViewCommand}"
+						  CommandParameter="{x:Static local:Views.PlainText}"
+						  IsChecked="{Binding View, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:Views.PlainText}}"/>
+				<MenuItem Header="Hex And Plain Text View"
+						  Command="{Binding ViewCommand}"
+						  CommandParameter="{x:Static local:Views.Both}"
+						  IsChecked="{Binding View, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:Views.Both}}"/>
+			</MenuItem>
+			<MenuItem Header="Help">
+				<MenuItem Header="Documenation"
+						  Command="{Binding DocumentationCommand}"/>
+				<MenuItem Header="Bug Report"
+						  Command="{Binding BugReportCommand}"/>
+				<Separator />
+				<MenuItem Header="About"
+						  Command="{Binding AboutCommand}"/>
+			</MenuItem>
+		</Menu>
+		<Grid ColumnDefinitions="*,10,200"
+			  Margin="10">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="10" />
+				<RowDefinition Height="1*"
+							   MinHeight="100" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="1*"
+							   MinHeight="100"/>
+				<RowDefinition Height="10" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+			<Border Grid.Column="0"
+					Grid.Row="0">
+				<StackPanel Orientation="Horizontal"
+							Spacing="10">
+					<StackPanel.Styles>
+						<Style Selector="RadioButton">
+							<Setter Property="IsHitTestVisible" Value="False" />
+						</Style>
+					</StackPanel.Styles>
+					<Label Content="Signal:"
+						   VerticalAlignment="Center"/>
+					<RadioButton Content="CD"
+								 IsChecked="{Binding SignalCD}"/>
+					<RadioButton Content="RI"
+								 IsChecked="{Binding SignalRI}"/>
+					<RadioButton Content="DSR"
+								 IsChecked="{Binding SignalDSR}"/>
+					<RadioButton Content="CTS"
+								 IsChecked="{Binding SignalCTS}"/>
+					<Label Content="Data Flow Control:"
+						   Margin="10 0 0 0"
+						   VerticalAlignment="Center"/>
+					<CheckBox Content="RTS"
+							  IsChecked="{Binding IsRTSEnabled}"
+							  IsEnabled="{Binding !IsConnected}"/>
+					<CheckBox Content="DTR"
+							  IsChecked="{Binding IsDTREnabled}"
+							  IsEnabled="{Binding !IsConnected}"/>
+
+				</StackPanel>
+			</Border>
+			<hex:HexEditor x:Name="SerialHexView"
+						   Grid.Column="0"
+						   Grid.Row="2"
+						   FontFamily="Cascadia Code,Consolas,Menlo,Monospace">
+				<hex:HexEditor.Columns>
+					<hexr:OffsetColumn IsVisible="{Binding HasOffsetInHexView}"
+									   Foreground="#a0a0a0" />
+					<hexr:HexColumn Foreground="#d0d0d0" />
+					<hexr:BinaryColumn IsVisible="{Binding HasBinaryInHexView}"
+									   Foreground="#808080"/>
+					<hexr:AsciiColumn IsVisible="{Binding HasPlainTextInHexView}"
+									  InvalidCellChar="?"
+									  Foreground="#b0b0b0"/>
+				</hex:HexEditor.Columns>
+			</hex:HexEditor>
+			<GridSplitter Grid.Row="3"
+						  Grid.Column="0"
+						  ResizeDirection="Rows"
+						  Height="10"
+						  Background="Transparent"
+						  x:Name="ViewSplitter"/>
+			<TextBox Grid.Column="0"
+					 Grid.Row="4"
+					 x:Name="PlainText"
+					 IsReadOnly="True"
+					 FontFamily="Cascadia Code,Consolas,Menlo,Monospace"
+					 Padding="2"
+					 ScrollViewer.AllowAutoHide="False"
+					 TextWrapping="WrapWithOverflow">
+			</TextBox>
+			<Grid Grid.Column="2"
+				  Grid.Row="0"
+				  Grid.RowSpan="5"
+				  RowDefinitions="Auto,10,*">
+				<Button x:Name="ConnectButton"
+						Command="{Binding ConnectCommand}"
+						IsVisible="{Binding !IsConnected}"
+						Grid.Row="0"
+						Content="Connect"
+						VerticalAlignment="Bottom"
+						HorizontalAlignment="Right" />
+				<Button x:Name="DisonnectButton"
+						Command="{Binding DisconnectCommand}"
+						IsVisible="{Binding IsConnected}"
+						Grid.Row="0"
+						Content="Disconnect"
+						VerticalAlignment="Bottom"
+						HorizontalAlignment="Right"/>
+				<ScrollViewer Grid.Row="2"
+							  VerticalScrollBarVisibility="Auto"
+							  AllowAutoHide="False">
+					<StackPanel Spacing="5"
+								IsEnabled="{Binding !IsConnected}"
+								Margin="0 0 5 0">
+						<StackPanel>
+							<Label Content="Port:" />
+							<ComboBox x:Name="PortList"/>
+						</StackPanel>
+						<StackPanel>
+							<Label Content="Baud:" />
+							<ComboBox x:Name="BaudList"/>
+						</StackPanel>
+						<StackPanel>
+							<Label Content="Data Size:" />
+							<ComboBox x:Name="DataSizeList" />
+						</StackPanel>
+						<StackPanel>
+							<Label Content="Stop Bits:" />
+							<ComboBox x:Name="StopBitsList" />
+						</StackPanel>
+						<StackPanel>
+							<Label Content="Parity:" />
+							<ComboBox x:Name="ParityList" />
+						</StackPanel>
+						<StackPanel>
+							<Label Content="Handshake:" />
+							<ComboBox x:Name="HandshakeList" />
+						</StackPanel>
+						<StackPanel>
+							<Label Content="Read-Timeout:" />
+							<NumericUpDown x:Name="ReadTimeoutBox"
+										   Value="{Binding ReadTimeout}"
+										   Minimum="0"
+										   Maximum="10000"
+										   Increment="1"
+										   FormatString="0"/>
+						</StackPanel>
+						<StackPanel>
+							<Label Content="Write-Timeout:" />
+							<NumericUpDown x:Name="WriteTimeoutBox"
+										   Value="{Binding WriteTimeout}"
+										   Minimum="0"
+										   Maximum="10000"
+										   Increment="1"
+										   FormatString="0"/>
+						</StackPanel>
+					</StackPanel>
+				</ScrollViewer>
+			</Grid>
+			<StackPanel Grid.Column="0"
+						Grid.ColumnSpan="3"
+						Grid.Row="6"
+						Spacing="10"
+						Orientation="Vertical">
+				<StackPanel Spacing="10"
+							Orientation="Horizontal">
+					<Label Content="Encoding:"
+						   VerticalAlignment="Center"
+						   Width="100"/>
+					<RadioButton Content="Char"
+								 IsChecked="{Binding EncodingMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:EncodingMode.Char}}"/>
+					<RadioButton Content="Bin"
+								 IsChecked="{Binding EncodingMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:EncodingMode.Bin}}"/>
+					<RadioButton Content="Hex"
+								 IsChecked="{Binding EncodingMode, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static local:EncodingMode.Hex}}"/>
+					<Label Content="Linebreak:"
+						   VerticalAlignment="Center"
+						   Margin="10 0 0 0"/>
+					<ComboBox Width="150"
+							  x:Name="LinebreakList"/>
+				</StackPanel>
+				<Grid ColumnDefinitions="Auto,10,*,10,Auto"
+					  RowDefinitions="Auto,10,Auto">
+					<Label Content="Buffer:"
+						   VerticalAlignment="Center"
+						   Grid.Column="0"
+						   Width="100"/>
+					<TextBox x:Name="SendText"
+							 AcceptsReturn="False"
+							 AcceptsTab="False"
+							 Text="Test"
+							 Grid.Column="2"
+							 ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+							 TextWrapping="NoWrap"
+						     FontFamily="Cascadia Code,Consolas,Menlo,Monospace"
+							 VerticalContentAlignment="Center"
+							 FontSize="14"/>
+					<Button x:Name="SendButton"
+							Command="{Binding SendCommand}"
+							CommandParameter="{Binding Text, ElementName=SendText}"
+							Content="Send"
+							HorizontalAlignment="Right"
+							Grid.Column="4"/>
+					<Label Content="Last Buffer:"
+						   VerticalAlignment="Center"
+						   Grid.Column="0"
+						   Grid.Row="2"
+						   Width="100"/>
+					<ComboBox x:Name="LastBufferList"
+							  Grid.Column="2"
+						  	  Grid.Row="2"
+							  FontFamily="Cascadia Code,Consolas,Menlo,Monospace"
+							  VerticalContentAlignment="Center"
+							  FontSize="14"
+							  ItemsSource="{Binding LastBufferItems}"
+							  SelectedIndex="{Binding LastBufferItemIndex}">
+						<ComboBox.Styles>
+							<Style Selector="ComboBoxItem">
+								<Setter Property="Height" Value="30" />
+								<Setter Property="VerticalContentAlignment" Value="Center" />
+							</Style>
+						</ComboBox.Styles>
+						<ComboBox.ItemTemplate>
+							<DataTemplate x:DataType="local:LastBufferItemViewModel">
+								<StackPanel Orientation="Horizontal"
+											Spacing="5">
+									<TextBlock Text="{Binding EncodingMode, StringFormat='[{0}]'}"
+											   Width="60"
+											   Foreground="#808080"/>
+									<TextBlock Text="{Binding Display}"
+											   TextWrapping="NoWrap" />
+								</StackPanel>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+					<Button x:Name="SendLastButton"
+							Command="{Binding SendLastCommand}"
+							CommandParameter="{Binding SelectedItem, ElementName=LastBufferList}"
+							Content="Send"
+							HorizontalAlignment="Right"
+							Grid.Column="4"
+							Grid.Row="2"/>
+				</Grid>
+			</StackPanel>
+		</Grid>
+	</DockPanel>
+</Window>

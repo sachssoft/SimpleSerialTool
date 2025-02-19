@@ -1,0 +1,16 @@
+<!-- MIT License - Copyright (c) 2025 Tobias Sachs -->
+<!-- See LICENSE file for details. -->
+<Application xmlns="https://github.com/avaloniaui"
+		 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		 x:Class="sachssoft.SimpleSerialTool.App"
+		 RequestedThemeVariant="Dark">
+	<!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+	<Application.Styles>
+		<SimpleTheme />
+		<StyleInclude Source="avares://AvaloniaHex/Themes/Simple/AvaloniaHex.axaml"/>
+	</Application.Styles>
+	<Application.Resources>
+		<FontFamily x:Key="SourceCodeProFont">avares://AvaloniaHex.Demo/Resources#Source Code Pro</FontFamily>
+	</Application.Resources>
+</Application>
