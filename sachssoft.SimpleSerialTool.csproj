@@ -12,7 +12,7 @@
 		<FileVersion>1.0.0</FileVersion>
 		<Copyright>© 2025 by Tobias Sachs</Copyright>
 		<Product>Simple Serial Tool</Product>
-		<Description>Your Simple Serial Tool is an application for communicating with serial ports, allowing users to send and receive data via COM ports. It can be used for debugging, testing, and controlling serial devices.</Description>
+		<Description>Simple Serial Tool is a tool for communicating with serial ports, allowing users to send and receive data via COM ports. It can be used for debugging, testing, and controlling serial devices.</Description>
 		<PackageTags>Serial Communication COM Port Serialport Testing Tool Controller Microcontroller Harddrive Simple</PackageTags>
 		<RepositoryUrl>https://github.com/sachssoft/SimpleSerialTool</RepositoryUrl>
 		<Copyright>© 2025 Tobias Sachs. Alle Rechte vorbehalten.</Copyright>
